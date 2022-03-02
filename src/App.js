@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Routes, Route} from 'react-router-dom';
+import { Routes, Route, Navigate} from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import HomePage from './pages/homepage/homepage.component';
@@ -27,6 +27,8 @@ class App extends React.Component {
       }
       setCurrentUser(userAuth);
     })
+
+    console.log(`Here -> ${this.props.currentUser}`);
   }
   componentWillUnmount(){
     this.unSubscribeFromAuth();
@@ -38,15 +40,24 @@ class App extends React.Component {
         <Routes>
           <Route path='/' element={<HomePage/>}/>       
           <Route path='/shop' element={<ShopPage/>}/>      
-          <Route path='/signin' element={<SignInAndSignUpPage/>}/>      
+          <Route path='/signin' element={<SignInAndSignUpPage/>}/>
+          <Route path="signIn" element={this.props.currentUser ? (<Navigate replace to="/" />) : (<SignInAndSignUpPage />)}/>      
+                
         </Routes>
       </div>
     )
   }
 }
 
+const mapStateToProps = ({ user }) => ({
+  setCurrentUser: user.currentUser
+})
+
 const mapDispathToProps = dispatch => ({
   setCurrentUser: user => dispatch(setCurrentUser(user))
 })
 
-export default connect(null, mapDispathToProps)(App);
+export default connect(
+  mapStateToProps, 
+  mapDispathToProps
+)(App);
